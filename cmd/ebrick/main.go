@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+	ebrickcli "github.com/trinitytechnology/ebrick-cli"
 	"github.com/trinitytechnology/ebrick-cli/internal/app"
 )
 
@@ -25,9 +26,6 @@ func main() {
 	rootCmd.Execute()
 }
 
-var cliVersion = "1.0.0"
-var fwVersion = "0.3.4"
-
 // add version command
 func createVersionCommand() *cobra.Command {
 	var versionCmd = &cobra.Command{
@@ -35,7 +33,7 @@ func createVersionCommand() *cobra.Command {
 		Short:   "Print the version number of ebrick",
 		Aliases: []string{"v"},
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("eBrick Cli: %s, eBrick Framework: %s \n", cliVersion, fwVersion)
+			fmt.Printf("eBrick Cli: %s, eBrick Framework: %s \n", ebrickcli.Version, ebrickcli.FrameworkVersion)
 		},
 	}
 	return versionCmd

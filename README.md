@@ -9,7 +9,7 @@ Before you can use the ebrick CLI, you need to install it. Follow these steps:
 ### Using Go
 
 ```bash
-go install github.com/trinitytechnology/ebrick/cli/cmd/ebrick@latest
+go install github.com/trinitytechnology/ebrick-cli/cmd/ebrick@latest
 ```
 
 ### Download the ebrick CLI binary

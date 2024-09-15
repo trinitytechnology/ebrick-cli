@@ -1,24 +1,91 @@
-name: Build
+name: eBrick Cli Release
 
 on:
   push:
-  pull_request:
-    branches:
-      - main
+    tags:
+      - 'v*.*.*' # Trigger this workflow only on version tags (e.g., v1.0.0)
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      # Check out the code
+      - name: Check out code
+        uses: actions/checkout@v3
 
-    - name: Set up Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: '1.22.5'
+      # Set up Go environment
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22.5' # Use Go version 1.22.5
 
-    - name: Build Go executable
-      run: |
-        go build -o ebrick ./cmd/ebrick
+      # Cache Go modules
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      # Install dependencies
+      - name: Install dependencies
+        run: go mod download
+
+      # Build the application for different platforms
+      - name: Build for Linux
+        run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ebrick-linux-amd64 ./cmd/ebrick
+
+      - name: Build for macOS
+        run: CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ebrick-darwin-amd64 ./cmd/ebrick
+
+      - name: Build for Windows
+        run: CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ebrick-windows-amd64.exe ./cmd/ebrick
+
+      # Create release
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+
+      # Upload Linux binary
+      - name: Upload Linux binary
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./ebrick-linux-amd64
+          asset_name: ebrick-linux-amd64
+          asset_content_type: application/octet-stream
+
+      # Upload macOS binary
+      - name: Upload macOS binary
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./ebrick-darwin-amd64
+          asset_name: ebrick-darwin-amd64
+          asset_content_type: application/octet-stream
+
+      # Upload Windows binary
+      - name: Upload Windows binary
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./ebrick-windows-amd64.exe
+          asset_name: ebrick-windows-amd64.exe
+          asset_content_type: application/octet-stream
