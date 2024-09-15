@@ -1,12 +1,28 @@
 name: Build eBrick Binaries
 
 on:
-  pull_request:
-    branches:
-      - main
   push:
-    branches:
-      - main
+    paths:
+      - '**/*.go'       # Go source files
+      - '**/*.tmpl'     # Template files
+      - '**/*.tpl'      # Template files
+      - 'go.mod'        # Dependency management file
+      - 'go.sum'        # Dependency lock file
+      - 'config/**/*.yaml'  # YAML config files
+      - 'config/**/*.yml'  # YAML config files
+      - 'config/**/*.json'  # JSON config files
+      - '.github/workflows/*'  # CI/CD workflow files
+  pull_request:
+    paths:
+      - '**/*.go'       # Go source files
+      - '**/*.tmpl'     # Template files
+      - '**/*.tpl'      # Template files
+      - 'go.mod'        # Dependency management file
+      - 'go.sum'        # Dependency lock file
+      - 'config/**/*.yaml'  # YAML config files
+      - 'config/**/*.yml'  # YAML config files
+      - 'config/**/*.json'  # JSON config files
+      - '.github/workflows/*'  # CI/CD workflow files
 jobs:
   build:
     runs-on: ubuntu-latest
