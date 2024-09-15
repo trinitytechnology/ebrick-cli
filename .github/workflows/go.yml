@@ -68,8 +68,16 @@ jobs:
           asset_name: ebrick-linux-amd64
           asset_content_type: application/octet-stream
 
-      # Upload macOS binary
-      - name: Upload macOS binary
+      # Build for macOS (Intel)
+      - name: Build for macOS (Intel)
+        run: CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ebrick-darwin-amd64 .
+
+      # Build for macOS (M1 ARM64)
+      - name: Build for macOS (M1 ARM64)
+        run: CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -o ebrick-darwin-arm64 .
+
+      # Upload macOS (Intel) binary
+      - name: Upload macOS (Intel) binary
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -77,6 +85,17 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./ebrick-darwin-amd64
           asset_name: ebrick-darwin-amd64
+          asset_content_type: application/octet-stream
+
+      # Upload macOS (M1 ARM64) binary
+      - name: Upload macOS (M1 ARM64) binary
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./ebrick-darwin-arm64
+          asset_name: ebrick-darwin-arm64
           asset_content_type: application/octet-stream
 
       # Upload Windows binary
