@@ -3,8 +3,6 @@ name: Docker Build and Release
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
     tags:
       - 'v*.*.*' # Trigger the workflow only when a tag matching the pattern is pushed
 
