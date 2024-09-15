@@ -14,14 +14,14 @@ go install github.com/trinitytechnology/ebrick-cli/cmd/ebrick@latest
 
 ### Download the ebrick CLI binary
 
-- For macOS/Linux:
+- For Linux:
 
 ```bash
 curl -L -o ebrick https://github.com/trinitytechnology/ebrick-cli/releases/download/v0.1.2/ebrick-linux-amd64
 ```
 
-- For Windows:
-Download the binary from https://example.com/ebrick/releases.
+- For Windows/MacOS:
+Download the binary from https://github.com/trinitytechnology/ebrick-cli/releases.
 
 ### Using Docker image
 
