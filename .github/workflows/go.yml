@@ -35,46 +35,31 @@ jobs:
       - name: Install dependencies
         run: go mod download
 
-      # Build the application for different platforms
+      # Build for Linux
       - name: Build for Linux
         run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ebrick-linux-amd64 ./cmd/ebrick
 
-      - name: Build for macOS
+      # Build for macOS (Intel)
+      - name: Build for macOS (Intel)
         run: CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ebrick-darwin-amd64 ./cmd/ebrick
 
+      # Build for macOS (M1 ARM64)
+      - name: Build for macOS (M1 ARM64)
+        run: CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -o ebrick-darwin-arm64 ./cmd/ebrick
+
+      # Build for Windows
       - name: Build for Windows
-        run: CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ebrick-windows-amd64.exe ./cmd/ebrick
-
-      # # Create release
-      # - name: Create GitHub Release
-      #   id: create_release
-      #   uses: actions/create-release@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     tag_name: ${{ github.ref_name }}
-      #     release_name: Release ${{ github.ref_name }}
-      #     draft: false
-      #     prerelease: false
-
+        run: CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ebrick-windows-amd64.exe ./cmd/ebrick      
       # Upload Linux binary
       - name: Upload Linux binary
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ github.event.release.upload_url }}
           asset_path: ./ebrick-linux-amd64
           asset_name: ebrick-linux-amd64
           asset_content_type: application/octet-stream
-
-      # Build for macOS (Intel)
-      - name: Build for macOS (Intel)
-        run: CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ebrick-darwin-amd64 .
-
-      # Build for macOS (M1 ARM64)
-      - name: Build for macOS (M1 ARM64)
-        run: CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -o ebrick-darwin-arm64 .
 
       # Upload macOS (Intel) binary
       - name: Upload macOS (Intel) binary
