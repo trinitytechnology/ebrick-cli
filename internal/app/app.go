@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	ebrickcli "github.com/trinitytechnology/ebrick-cli"
 	"github.com/trinitytechnology/ebrick-cli/pkg/utils"
 )
 
@@ -17,8 +18,6 @@ type AppConfig struct {
 	Messaging     bool     `yaml:"messaging"`
 	Version       string   `yaml:"version"`
 }
-
-var EBrickVersion = "v0.3.2"
 
 const appManifest = ".ebrick.yaml"
 
@@ -77,7 +76,7 @@ func NewApplicationCommandPrompts() AppConfig {
 		Observability: observability,
 		Cache:         cache,
 		Messaging:     messaging,
-		Version:       EBrickVersion,
+		Version:       ebrickcli.FrameworkVersion,
 	}
 
 	return appConfig
