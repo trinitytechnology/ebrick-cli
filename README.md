@@ -17,7 +17,7 @@ go install github.com/trinitytechnology/ebrick-cli/cmd/ebrick@latest
 - For macOS/Linux:
 
 ```bash
-curl -L -o ebrick https://example.com/ebrick/releases/latest/download/ebrick-linux-amd64
+curl -L -o ebrick https://github.com/trinitytechnology/ebrick-cli/releases/download/v0.1.2/ebrick-linux-amd64
 ```
 
 - For Windows:
