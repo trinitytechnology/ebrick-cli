@@ -1,12 +1,12 @@
-name: eBrick Cli Release
+name: eBrick Release
 
 on:
-  push:
-    tags:
-      - 'v*.*.*' # Trigger this workflow only on version tags (e.g., v1.0.0)
+  release:
+    types: [published]
+  workflow_dispatch: # Allow manual triggering
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,7 +18,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.22.5' # Use Go version 1.22.5
+          go-version: '1.22.5'
 
       # Cache Go modules
       - name: Cache Go modules
@@ -49,7 +49,8 @@ jobs:
 
       # Build for Windows
       - name: Build for Windows
-        run: CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ebrick-windows-amd64.exe ./cmd/ebrick      
+        run: CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ebrick-windows-amd64.exe ./cmd/ebrick
+
       # Upload Linux binary
       - name: Upload Linux binary
         uses: actions/upload-release-asset@v1
@@ -93,22 +94,3 @@ jobs:
           asset_path: ./ebrick-windows-amd64.exe
           asset_name: ebrick-windows-amd64.exe
           asset_content_type: application/octet-stream
-
-      # Set up Docker Buildx
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      # Log in to Docker Hub
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      # Build and push multi-platform Docker image
-      - name: Build and push Docker image
-        run: |
-          docker buildx build --platform linux/amd64,linux/arm64 \
-            --tag trinitytechnology/ebrick:${{ github.ref_name }} \
-            --tag trinitytechnology/ebrick:latest \
-            --push .
