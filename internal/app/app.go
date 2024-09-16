@@ -47,12 +47,11 @@ func NewApp() {
 	}
 
 	fmt.Println("Creating a new eBrick application with the name:", appConfig.Name)
-	GenerateApplication(appConfig)
+	generator := NewAppGenerator(&appConfig)
+	generator.Generate(appConfig)
 
 	fmt.Println("Application created successfully.")
 
-	// Execute post generation tasks
-	PostGenerated()
 }
 
 func NewApplicationCommandPrompts() AppConfig {
@@ -87,13 +86,4 @@ func RunApp() {
 
 	// Run go mod tidy
 	utils.ExecCommand("go", "run", "cmd/main.go")
-}
-
-func PostGenerated() {
-
-	fmt.Println("Running post generation tasks...")
-
-	// Run go mod tidy
-	utils.ExecCommand("go", "mod", "tidy")
-
 }

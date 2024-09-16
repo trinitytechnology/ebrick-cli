@@ -52,6 +52,16 @@ func GetUserInput(prompt string, required bool, requiredMsg string) string {
 	}
 }
 
+func GetUserInputWithValidation(prompt string, required bool, requiredMsg string, validate func(string) bool, validationMsg string) string {
+	for {
+		input := GetUserInput(prompt, required, requiredMsg)
+		if validate(input) {
+			return input
+		}
+		fmt.Println(validationMsg)
+	}
+}
+
 // Helper function to process modules input and remove duplicates
 func ProcessSlicesInput(input string) []string {
 	if input == "" {
