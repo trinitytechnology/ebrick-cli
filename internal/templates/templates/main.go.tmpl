@@ -6,6 +6,10 @@ import (
 
 func main() {
 	app := ebrick.NewApplication()
-	app.RegisterModules()
+	app.RegisterModules(
+    {{ range .Modules }}
+        &{{ .Name }}Module{},
+    {{ end }}
+    )
 	app.Start()
 }

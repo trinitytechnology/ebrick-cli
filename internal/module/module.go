@@ -47,7 +47,7 @@ func NewModule() {
 		log.Fatalf("Error writing module configuration file: %s", err)
 	}
 
-	generator := NewModuleGenerator(&moduleConfig)
+	generator := NewModuleGenerator(&appConfig, &moduleConfig)
 	generator.Generate()
 
 }

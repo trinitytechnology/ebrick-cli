@@ -48,7 +48,7 @@ func NewApp() {
 
 	fmt.Println("Creating a new eBrick application with the name:", appConfig.Name)
 	generator := NewAppGenerator(&appConfig)
-	generator.Generate(appConfig)
+	generator.Generate()
 
 	fmt.Println("Application created successfully.")
 
