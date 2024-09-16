@@ -5,6 +5,7 @@ import (
 	"os"
 
 	ebrickcli "github.com/trinitytechnology/ebrick-cli"
+	"github.com/trinitytechnology/ebrick-cli/internal/constants"
 	"github.com/trinitytechnology/ebrick-cli/pkg/utils"
 )
 
@@ -19,17 +20,15 @@ type AppConfig struct {
 	Version       string   `yaml:"version"`
 }
 
-const appManifest = ".ebrick.yaml"
-
 // NewApp creates a new eBrick application
 func NewApp() {
 
 	var appConfig AppConfig
 
 	// Check .ebrick.yaml file exists
-	if !utils.FileExists(appManifest) {
+	if !utils.FileExists(constants.AppManifestFile) {
 		appConfig = NewApplicationCommandPrompts()
-		err := utils.WriteYamlFile(appManifest, appConfig)
+		err := utils.WriteYamlFile(constants.AppManifestFile, appConfig)
 		if err != nil {
 			os.Exit(1)
 		}
@@ -41,7 +40,7 @@ func NewApp() {
 	}
 
 	// Read .ebrick.yaml
-	appConfig, err := utils.ReadYamlFile[AppConfig](appManifest)
+	appConfig, err := utils.ReadYamlFile[AppConfig](constants.AppManifestFile)
 	if err != nil {
 		fmt.Println("Error reading .ebrick.yaml:", err)
 		return
