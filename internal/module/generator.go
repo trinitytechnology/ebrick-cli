@@ -9,19 +9,24 @@ import (
 	"github.com/trinitytechnology/ebrick-cli/pkg/utils"
 )
 
-var files = map[string]string{}
-
 type ModuleGenerator struct {
 	appConfig    *app.AppConfig
 	moduleConfig *ModuleConfig
 	moduleDir    string
+	files        map[string]string
 }
 
 func NewModuleGenerator(appConfig *app.AppConfig, moduleConfig *ModuleConfig) *ModuleGenerator {
+	moduleDir := MODULE_INTERNAL_DIR + "/" + moduleConfig.Package
+
+	files := make(map[string]string)
+	files[moduleDir+"/"+moduleConfig.Package+".go"] = templates.ModuleTemplate
+
 	return &ModuleGenerator{
 		moduleConfig: moduleConfig,
 		moduleDir:    MODULE_INTERNAL_DIR + "/" + moduleConfig.Package,
 		appConfig:    appConfig,
+		files:        files,
 	}
 }
 
@@ -29,7 +34,7 @@ func (m ModuleGenerator) Generate() {
 	fmt.Println("Creating a new module with the name:", m.moduleConfig.Name)
 
 	// Create module directory
-	utils.CreateFolder(MODULE_INTERNAL_DIR + "/" + m.moduleConfig.Package)
+	utils.CreateFolder(m.moduleDir)
 
 	// Generate module files
 	m.generateModuleFiles()
@@ -39,10 +44,8 @@ func (m ModuleGenerator) Generate() {
 }
 
 func (m ModuleGenerator) generateModuleFiles() {
-	files = make(map[string]string)
-	files[m.moduleDir+"/"+m.moduleConfig.Package+".go"] = templates.ModuleTemplate
 
-	for file, content := range files {
+	for file, content := range m.files {
 		utils.GenerateFileFromTemplate(file, m.moduleConfig, content)
 		fmt.Println("Generated", file, "successfully.")
 	}
