@@ -5,6 +5,7 @@ import (
 	"os"
 
 	ebrickcli "github.com/trinitytechnology/ebrick-cli"
+	"github.com/trinitytechnology/ebrick-cli/internal/constants"
 	"github.com/trinitytechnology/ebrick-cli/pkg/utils"
 )
 
@@ -19,17 +20,15 @@ type AppConfig struct {
 	Version       string   `yaml:"version"`
 }
 
-const appManifest = ".ebrick.yaml"
-
 // NewApp creates a new eBrick application
 func NewApp() {
 
 	var appConfig AppConfig
 
 	// Check .ebrick.yaml file exists
-	if !utils.FileExists(appManifest) {
+	if !utils.FileExists(constants.AppManifestFile) {
 		appConfig = NewApplicationCommandPrompts()
-		err := utils.WriteYamlFile(appManifest, appConfig)
+		err := utils.WriteYamlFile(constants.AppManifestFile, appConfig)
 		if err != nil {
 			os.Exit(1)
 		}
@@ -41,19 +40,18 @@ func NewApp() {
 	}
 
 	// Read .ebrick.yaml
-	appConfig, err := utils.ReadYamlFile[AppConfig](appManifest)
+	appConfig, err := utils.ReadYamlFile[AppConfig](constants.AppManifestFile)
 	if err != nil {
 		fmt.Println("Error reading .ebrick.yaml:", err)
 		return
 	}
 
 	fmt.Println("Creating a new eBrick application with the name:", appConfig.Name)
-	GenerateApplication(appConfig)
+	generator := NewAppGenerator(&appConfig)
+	generator.Generate()
 
 	fmt.Println("Application created successfully.")
 
-	// Execute post generation tasks
-	PostGenerated()
 }
 
 func NewApplicationCommandPrompts() AppConfig {
@@ -88,13 +86,4 @@ func RunApp() {
 
 	// Run go mod tidy
 	utils.ExecCommand("go", "run", "cmd/main.go")
-}
-
-func PostGenerated() {
-
-	fmt.Println("Running post generation tasks...")
-
-	// Run go mod tidy
-	utils.ExecCommand("go", "mod", "tidy")
-
 }

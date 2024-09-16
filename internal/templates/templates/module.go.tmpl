@@ -1,0 +1,48 @@
+package {{ .Package }}
+
+import (
+	"github.com/trinitytechnology/ebrick/module"
+)
+
+type {{ .Name }}Module struct {
+}
+
+// Install implements plugin.Plugin.
+func (p *{{ .Name }}Module) Initialize(opt *module.Options) error {
+	// Init Tables
+	log := opt.Logger
+    log.Info("{{ .Name }} Module Initializing")
+
+	// Migrate Tables
+
+	// Init Repository
+
+	// Init Service
+
+	// Init Handler
+
+	// setup routes
+
+	// setup stream
+
+	log.Info("{{ .Name }} Module Initialized")
+	return nil
+}
+
+func (p *{{ .Name }}Module) Name() string {
+	return "{{ .Name }}"
+}
+
+func (p *{{ .Name }}Module) Version() string {
+	return "{{ .Version }}"
+}
+
+func (p *{{ .Name }}Module) Description() string {
+	return "{{ .Description }}"
+}
+
+func (p *{{ .Name }}Module) Id() string {
+	return "{{ .Id }}"
+}
+
+var Module {{ .Name }}Module

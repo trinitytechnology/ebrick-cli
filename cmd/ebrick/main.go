@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 	ebrickcli "github.com/trinitytechnology/ebrick-cli"
 	"github.com/trinitytechnology/ebrick-cli/internal/app"
+	"github.com/trinitytechnology/ebrick-cli/internal/module"
 )
 
 //go:embed banner.txt
@@ -20,15 +21,15 @@ func main() {
 		Use: "ebrick",
 	}
 
-	rootCmd.AddCommand(createVersionCommand())
-	rootCmd.AddCommand(createAppCommands())
-	rootCmd.AddCommand(createRunCommand())
+	rootCmd.AddCommand(versionCommand())
+	rootCmd.AddCommand(newCommand())
+	rootCmd.AddCommand(runCommand())
 	rootCmd.Execute()
 }
 
 // add version command
-func createVersionCommand() *cobra.Command {
-	var versionCmd = &cobra.Command{
+func versionCommand() *cobra.Command {
+	return &cobra.Command{
 		Use:     "version",
 		Short:   "Print the version number of ebrick",
 		Aliases: []string{"v"},
@@ -36,34 +37,47 @@ func createVersionCommand() *cobra.Command {
 			fmt.Printf("eBrick Cli: %s, eBrick Framework: %s \n", ebrickcli.Version, ebrickcli.FrameworkVersion)
 		},
 	}
-	return versionCmd
 }
 
-func createAppCommands() *cobra.Command {
+func newCommand() *cobra.Command {
 	var newCmd = &cobra.Command{
 		Use:   "new",
 		Short: "Create a new ebrick application, module or service..",
 	}
+	newCmd.AddCommand(newAppCommand())
+	newCmd.AddCommand(newModuleCommand())
 
-	var newAppCmd = &cobra.Command{
+	return newCmd
+}
+
+func newAppCommand() *cobra.Command {
+
+	return &cobra.Command{
 		Use:   "app",
 		Short: "Create a new ebrick application",
 		Run: func(cmd *cobra.Command, args []string) {
 			app.NewApp()
 		},
 	}
-	newCmd.AddCommand(newAppCmd)
-
-	return newCmd
 }
 
-func createRunCommand() *cobra.Command {
-	var runCmd = &cobra.Command{
+func newModuleCommand() *cobra.Command {
+
+	return &cobra.Command{
+		Use:   "module",
+		Short: "Create a new ebrick module",
+		Run: func(cmd *cobra.Command, args []string) {
+			module.NewModule()
+		},
+	}
+}
+
+func runCommand() *cobra.Command {
+	return &cobra.Command{
 		Use:   "run",
 		Short: "Run the ebrick application",
 		Run: func(cmd *cobra.Command, args []string) {
 			app.RunApp()
 		},
 	}
-	return runCmd
 }
