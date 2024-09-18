@@ -2,6 +2,8 @@ name: Build eBrick Binaries
 
 on:
   push:
+    branches:
+      - main          # Main branch
     paths:
       - '**/*.go'       # Go source files
       - '**/*.tmpl'     # Template files
@@ -13,6 +15,8 @@ on:
       - 'config/**/*.json'  # JSON config files
       - '.github/workflows/*'  # CI/CD workflow files
   pull_request:
+    branches:
+      - main          # Main branch
     paths:
       - '**/*.go'       # Go source files
       - '**/*.tmpl'     # Template files
