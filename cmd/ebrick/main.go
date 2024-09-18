@@ -5,10 +5,12 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	ebrickcli "github.com/trinitytechnology/ebrick-cli"
 	"github.com/trinitytechnology/ebrick-cli/internal/app"
 	"github.com/trinitytechnology/ebrick-cli/internal/module"
 )
+
+var version = "development"
+var frameworkVersion = "v0.3.5"
 
 //go:embed banner.txt
 var banner string
@@ -34,7 +36,7 @@ func versionCommand() *cobra.Command {
 		Short:   "Print the version number of ebrick",
 		Aliases: []string{"v"},
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("eBrick Cli: %s, eBrick Framework: %s \n", ebrickcli.Version, ebrickcli.FrameworkVersion)
+			fmt.Printf("eBrick Cli: %s, eBrick Framework: %s \n", version, frameworkVersion)
 		},
 	}
 }
@@ -56,7 +58,7 @@ func newAppCommand() *cobra.Command {
 		Use:   "app",
 		Short: "Create a new ebrick application",
 		Run: func(cmd *cobra.Command, args []string) {
-			app.NewApp()
+			app.NewApp(frameworkVersion)
 		},
 	}
 }

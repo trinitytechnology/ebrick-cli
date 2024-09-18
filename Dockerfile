@@ -16,8 +16,11 @@ RUN go mod download
 # Copy the source from the current directory to the Working Directory inside the container
 COPY . .
 
-# Build the Go app
-RUN go build -o /usr/local/bin/ebrick ./cmd/ebrick
+# Define build argument for version
+ARG VERSION=dev
+
+# Build the Go app with the version flag
+RUN go build -ldflags "-X main.version=${VERSION}" -o /usr/local/bin/ebrick ./cmd/ebrick
 
 # Command to run the executable
 ENTRYPOINT ["ebrick"]
