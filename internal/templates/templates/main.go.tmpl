@@ -1,15 +1,15 @@
 package main
 
 import (
-	"github.com/trinitytechnology/ebrick"
+	"github.com/trinitytechnology/ebrick"{{ range .InternalModules }}
+    "{{ $.Package }}/internal/{{ .Package }}"
+{{ end }}
 )
 
 func main() {
 	app := ebrick.NewApplication()
-	app.RegisterModules(
-    {{ range .Modules }}
-        &{{ .Name }}Module{},
-    {{ end }}
-    )
+	app.RegisterModules({{ range .InternalModules }}
+        &{{ .Package }}.{{ .Name }}Module{},
+    {{ end }})
 	app.Start()
 }
