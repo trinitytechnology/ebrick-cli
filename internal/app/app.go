@@ -4,24 +4,23 @@ import (
 	"fmt"
 	"os"
 
-	ebrickcli "github.com/trinitytechnology/ebrick-cli"
 	"github.com/trinitytechnology/ebrick-cli/internal/constants"
 	"github.com/trinitytechnology/ebrick-cli/internal/model"
 	"github.com/trinitytechnology/ebrick-cli/pkg/utils"
 )
 
 // NewApp creates a new eBrick application
-func NewApp() {
+func NewApp(frameworkVersion string) {
 
 	var ebrickApp model.EBrickApp
 
 	// Check .ebrick.yaml file exists
 	if !utils.FileExists(constants.AppManifestFile) {
-		ebrickApp = NewApplicationCommandPrompts()
+		ebrickApp = NewApplicationCommandPrompts(frameworkVersion)
 	} else {
 		overwrite := utils.GetYesOrNoInput("Overwrite existing configuration?", true)
 		if !overwrite {
-			ebrickApp = NewApplicationCommandPrompts()
+			ebrickApp = NewApplicationCommandPrompts(frameworkVersion)
 		}
 	}
 
@@ -40,7 +39,7 @@ func NewApp() {
 
 }
 
-func NewApplicationCommandPrompts() model.EBrickApp {
+func NewApplicationCommandPrompts(frameworkVersion string) model.EBrickApp {
 
 	appName := utils.GetUserInput("Enter the name of the application: ", true, "Application name is required.")
 	packageName := utils.GetUserInput("Enter the application package: ", true, "Package name is required.")
@@ -60,7 +59,7 @@ func NewApplicationCommandPrompts() model.EBrickApp {
 		Observability:   observability,
 		Cache:           cache,
 		Messaging:       messaging,
-		Version:         ebrickcli.FrameworkVersion,
+		Version:         frameworkVersion,
 		InternalModules: []model.Module{},
 	}
 	err := utils.WriteYamlFile(constants.AppManifestFile, ebrickApp)

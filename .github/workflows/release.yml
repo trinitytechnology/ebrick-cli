@@ -14,6 +14,11 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
 
+      # Get the tag
+      - name: Get the tag
+        id: get_tag
+        run: echo "::set-output name=tag::${GITHUB_REF#refs/tags/}"
+
       # Set up Go environment
       - name: Set up Go
         uses: actions/setup-go@v4
@@ -34,22 +39,21 @@ jobs:
       # Install dependencies
       - name: Install dependencies
         run: go mod download
-
       # Build for Linux
       - name: Build for Linux
-        run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ebrick-linux-amd64 ./cmd/ebrick
+        run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-X main.version=${{ steps.get_tag.outputs.tag }}" -o ebrick-linux-amd64 ./cmd/ebrick
 
       # Build for macOS (Intel)
       - name: Build for macOS (Intel)
-        run: CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ebrick-darwin-amd64 ./cmd/ebrick
+        run: CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags "-X main.version=${{ steps.get_tag.outputs.tag }}" -o ebrick-darwin-amd64 ./cmd/ebrick
 
       # Build for macOS (M1 ARM64)
       - name: Build for macOS (M1 ARM64)
-        run: CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -o ebrick-darwin-arm64 ./cmd/ebrick
+        run: CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -ldflags "-X main.version=${{ steps.get_tag.outputs.tag }}" -o ebrick-darwin-arm64 ./cmd/ebrick
 
       # Build for Windows
       - name: Build for Windows
-        run: CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o ebrick-windows-amd64.exe ./cmd/ebrick
+        run: CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -ldflags "-X main.version=${{ steps.get_tag.outputs.tag }}" -o ebrick-windows-amd64.exe ./cmd/ebrick
 
       # Upload Linux binary
       - name: Upload Linux binary
