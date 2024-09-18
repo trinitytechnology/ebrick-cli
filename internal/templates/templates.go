@@ -32,3 +32,15 @@ var (
 	//go:embed templates/module.go.tmpl
 	ModuleTemplate string
 )
+
+const (
+	FILE_APPLICATION_YAML   = "application.yaml"
+	FILE_MAIN               = "cmd/main.go"
+	FILE_DOCKER_COMPOSE     = "docker-compose.yml"
+	FILE_GO_MOD             = "go.mod"
+	FILE_README             = "README.md"
+	FILE_GRAFANA_PROMETHEUS = "observability/prometheus/prometheus.yml"
+	FILE_GRAFANA_DATASOURCE = "observability/grafana/datasource.yml"
+	FILE_DOCKERFILE         = "Dockerfile"
+	FILE_MODULE             = "module.go"
+)

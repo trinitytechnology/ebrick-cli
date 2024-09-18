@@ -76,3 +76,31 @@ func CreateFolder(folderPath string) error {
 	}
 	return nil
 }
+
+func ListFiles(dirPath string, exts ...string) ([]string, error) {
+	var yamlFiles []string
+
+	// Get a list of directory entries
+	files, err := os.ReadDir(dirPath)
+	if err != nil {
+		return nil, err
+	}
+
+	// Iterate over each file in the directory
+	for _, file := range files {
+		// Check if the file has a .yaml or .yml extension
+		if !file.IsDir() {
+			if len(exts) == 0 {
+				yamlFiles = append(yamlFiles, file.Name())
+			} else {
+				for _, extension := range exts {
+					if filepath.Ext(file.Name()) == extension {
+						yamlFiles = append(yamlFiles, file.Name())
+						break
+					}
+				}
+			}
+		}
+	}
+	return yamlFiles, nil
+}

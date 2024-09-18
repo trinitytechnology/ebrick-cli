@@ -1,29 +1,15 @@
 package module
 
 import (
-	"fmt"
 	"log"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/iancoleman/strcase"
-	"github.com/trinitytechnology/ebrick-cli/internal/app"
 	"github.com/trinitytechnology/ebrick-cli/internal/constants"
+	"github.com/trinitytechnology/ebrick-cli/internal/model"
 	"github.com/trinitytechnology/ebrick-cli/pkg/utils"
 )
-
-type ModuleConfig struct {
-	Id          string `yaml:"id"`
-	Name        string `yaml:"name"`
-	Description string `yaml:"description"`
-	Version     string `yaml:"version"`
-	Package     string `yaml:"package"`
-	External    bool   `yaml:"external"`
-	Rest        bool   `yaml:"rest"`
-	Graphql     bool   `yaml:"graphql"`
-	Grpc        bool   `yaml:"grpc"`
-	Messaging   bool   `yaml:"messaging"`
-	Auth        bool   `yaml:"auth"`
-}
 
 func NewModule() {
 
@@ -33,46 +19,40 @@ func NewModule() {
 	}
 
 	// Read .ebrick.yaml
-	appConfig, err := utils.ReadYamlFile[app.AppConfig](constants.AppManifestFile)
+	ebrickApp, err := utils.ReadYamlFile[*model.EBrickApp](constants.AppManifestFile)
 	if err != nil {
 		log.Fatalf("Error reading %s file: %s", constants.AppManifestFile, err)
 	}
-
 	// Get module configuration from user
-	moduleConfig := newModuleCommandPrompts(appConfig)
+	module := newModuleCommandPrompts(ebrickApp)
 
-	// Create Module configuration file
-	err = utils.WriteYamlFile(fmt.Sprintf("%s/%s.yaml", constants.ModuleManifestDir, moduleConfig.Name), moduleConfig)
-	if err != nil {
-		log.Fatalf("Error writing module configuration file: %s", err)
-	}
-
-	generator := NewModuleGenerator(&appConfig, &moduleConfig)
+	generator := NewModuleGenerator(ebrickApp, module)
 	generator.Generate()
+}
 
+func findModule(name string, ebrickApp *model.EBrickApp) *model.Module {
+	for _, module := range ebrickApp.InternalModules {
+		if strings.EqualFold(module.Name, name) {
+			return &module
+		}
+	}
+	return nil
 }
 
 // NewModuleCommandPrompts prompts the user for module configuration
-func newModuleCommandPrompts(appConfig app.AppConfig) ModuleConfig {
-	var moduleConfig ModuleConfig
+func newModuleCommandPrompts(ebrickApp *model.EBrickApp) *model.Module {
+	var module *model.Module
 	moduleName := utils.GetUserInput("Enter the name of the module: ", true, "Module name is required.")
-	moduleConfigFile := fmt.Sprintf("%s/%s.yaml", constants.ModuleManifestDir, moduleName)
 
+	module = findModule(moduleName, ebrickApp)
 	// Check if module already exists and ask if user wants to regenerate
-	if utils.FileExists(moduleConfigFile) {
-		regenerate := utils.GetYesOrNoInput("Module already exists. Do you want to regenerate the configuration?", true)
-		if regenerate {
-			// Module already exists, read the configuration file
-			moduleConfig, err := utils.ReadYamlFile[ModuleConfig](moduleConfigFile)
-			if err != nil {
-				log.Fatalf("Error reading module configuration file: %s", err)
-			}
-			return moduleConfig
+	if module != nil {
+		if regenerate := utils.GetYesOrNoInput("Module already exists. Do you want to regenerate the configuration?", true); regenerate {
+			return module
 		}
 	}
 
 	version := utils.GetUserInputWithValidation("Enter the version of the module(eg v1.0.0): ", true, "Version is required.", utils.IsValidVersion, "Invalid version format. Please use semantic versioning format.")
-
 	description := utils.GetUserInput("Enter the description of the module: ", false, "")
 	external := utils.GetYesOrNoInput("Is this an external module?", false)
 	rest := utils.GetYesOrNoInput("Do you want to use REST API?", false)
@@ -81,24 +61,39 @@ func newModuleCommandPrompts(appConfig app.AppConfig) ModuleConfig {
 
 	// check if message enabled then ask for message usage
 	var messaging bool
-	if appConfig.Messaging {
+	if ebrickApp.Messaging {
 		messaging = utils.GetYesOrNoInput("Do you want to use Messaging?", false)
 	}
 
 	auth := utils.GetYesOrNoInput("Do you want to enable Authentication?", false)
 
-	moduleConfig = ModuleConfig{
-		Id:          uuid.New().String(),
-		Name:        strcase.ToCamel(moduleName),
-		Package:     strcase.ToSnake(moduleName),
-		Version:     version,
-		Description: description,
-		External:    external,
-		Rest:        rest,
-		Graphql:     graphql,
-		Grpc:        grpc,
-		Messaging:   messaging,
-		Auth:        auth,
+	// Check if module already exists then update the configuration
+	if module != nil {
+		module.Version = version
+		module.Description = description
+		module.External = external
+		module.Rest = rest
+		module.Graphql = graphql
+		module.Grpc = grpc
+		module.Messaging = messaging
+		module.Auth = auth
+		return module
+	} else {
+		newModule := model.Module{
+			Id:          uuid.New().String(),
+			Name:        strcase.ToCamel(moduleName),
+			Package:     strcase.ToSnake(moduleName),
+			Version:     version,
+			Description: description,
+			External:    external,
+			Rest:        rest,
+			Graphql:     graphql,
+			Grpc:        grpc,
+			Messaging:   messaging,
+			Auth:        auth,
+		}
+
+		ebrickApp.InternalModules = append(ebrickApp.InternalModules, newModule)
+		return &newModule
 	}
-	return moduleConfig
 }

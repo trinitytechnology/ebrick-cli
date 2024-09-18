@@ -4,30 +4,32 @@ import (
 	_ "embed"
 	"fmt"
 
+	"github.com/trinitytechnology/ebrick-cli/internal/model"
 	"github.com/trinitytechnology/ebrick-cli/internal/templates"
 	"github.com/trinitytechnology/ebrick-cli/pkg/utils"
 )
 
 type AppGenerator struct {
-	appConfig *AppConfig
+	ebrickApp *model.EBrickApp
 	files     map[string]string
 }
 
-func NewAppGenerator(appConfig *AppConfig) *AppGenerator {
-	files := make(map[string]string)
-	files["application.yaml"] = templates.ApplicationTemplate
-	files["cmd/main.go"] = templates.MainTemplate
-	files["docker-compose.yml"] = templates.DockerComposeTemplate
-	files["go.mod"] = templates.GoModTemplate
-	files["README.md"] = templates.ReadmeTemplate
-	files["Dockerfile"] = templates.DockerfileTemplate
-	if appConfig.Observability {
-		files["observability/prometheus/prometheus.yml"] = templates.GrafanaPrometheusTemplate
-		files["observability/grafana/datasource.yml"] = templates.GrafanaDatasourceTemplate
-	}
+func NewAppGenerator(ebrickApp *model.EBrickApp) *AppGenerator {
 
+	files := map[string]string{
+		templates.FILE_APPLICATION_YAML: templates.ApplicationTemplate,
+		templates.FILE_MAIN:             templates.MainTemplate,
+		templates.FILE_DOCKER_COMPOSE:   templates.DockerComposeTemplate,
+		templates.FILE_GO_MOD:           templates.GoModTemplate,
+		templates.FILE_README:           templates.ReadmeTemplate,
+		templates.FILE_DOCKERFILE:       templates.DockerfileTemplate,
+	}
+	if ebrickApp.Observability {
+		files[templates.FILE_GRAFANA_PROMETHEUS] = templates.GrafanaPrometheusTemplate
+		files[templates.FILE_GRAFANA_DATASOURCE] = templates.GrafanaDatasourceTemplate
+	}
 	return &AppGenerator{
-		appConfig: appConfig,
+		ebrickApp: ebrickApp,
 		files:     files,
 	}
 }
@@ -53,7 +55,7 @@ func (m AppGenerator) createFolders() {
 
 func (m AppGenerator) generateFiles() {
 	for file, template := range m.files {
-		utils.GenerateFileFromTemplate(file, m.appConfig, template)
+		utils.GenerateFileFromTemplate(file, m.ebrickApp, template)
 		fmt.Println("Generated", file, "successfully.")
 	}
 }

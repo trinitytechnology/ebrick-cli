@@ -4,19 +4,20 @@ import (
 	_ "embed"
 	"fmt"
 
-	"github.com/trinitytechnology/ebrick-cli/internal/app"
+	"github.com/trinitytechnology/ebrick-cli/internal/constants"
+	"github.com/trinitytechnology/ebrick-cli/internal/model"
 	"github.com/trinitytechnology/ebrick-cli/internal/templates"
 	"github.com/trinitytechnology/ebrick-cli/pkg/utils"
 )
 
 type ModuleGenerator struct {
-	appConfig    *app.AppConfig
-	moduleConfig *ModuleConfig
+	ebrickApp    *model.EBrickApp
+	moduleConfig *model.Module
 	moduleDir    string
 	files        map[string]string
 }
 
-func NewModuleGenerator(appConfig *app.AppConfig, moduleConfig *ModuleConfig) *ModuleGenerator {
+func NewModuleGenerator(ebrickApp *model.EBrickApp, moduleConfig *model.Module) *ModuleGenerator {
 	moduleDir := MODULE_INTERNAL_DIR + "/" + moduleConfig.Package
 
 	files := make(map[string]string)
@@ -25,7 +26,7 @@ func NewModuleGenerator(appConfig *app.AppConfig, moduleConfig *ModuleConfig) *M
 	return &ModuleGenerator{
 		moduleConfig: moduleConfig,
 		moduleDir:    MODULE_INTERNAL_DIR + "/" + moduleConfig.Package,
-		appConfig:    appConfig,
+		ebrickApp:    ebrickApp,
 		files:        files,
 	}
 }
@@ -49,6 +50,12 @@ func (m ModuleGenerator) generateModuleFiles() {
 		utils.GenerateFileFromTemplate(file, m.moduleConfig, content)
 		fmt.Println("Generated", file, "successfully.")
 	}
+
+	// Add module to app manifest
+	utils.WriteYamlFile(constants.AppManifestFile, m.ebrickApp)
+	// Add module to main.go
+	utils.GenerateFileFromTemplate(templates.FILE_MAIN, m.ebrickApp, templates.MainTemplate)
+
 }
 
 func (m ModuleGenerator) postGenerated() {
