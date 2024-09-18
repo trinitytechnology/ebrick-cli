@@ -28,3 +28,15 @@ Download the binary from https://github.com/trinitytechnology/ebrick-cli/release
 ```bash
 docker run -it trinitytechnology/ebrick new app
 ```
+
+### Create new application
+
+```bash
+ebrick new app
+```
+
+### Create new module
+
+```bash
+ebrick new module
+```
