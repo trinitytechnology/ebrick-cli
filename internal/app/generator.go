@@ -23,6 +23,7 @@ func NewAppGenerator(ebrickApp *model.EBrickApp) *AppGenerator {
 		templates.FILE_GO_MOD:           templates.GoModTemplate,
 		templates.FILE_README:           templates.ReadmeTemplate,
 		templates.FILE_DOCKERFILE:       templates.DockerfileTemplate,
+		templates.FILE_DOCKER_APP:       templates.DockerAppTemplate,
 	}
 	if ebrickApp.Observability {
 		files[templates.FILE_GRAFANA_PROMETHEUS] = templates.GrafanaPrometheusTemplate
