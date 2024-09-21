@@ -1,8 +1,8 @@
 # Use the official Golang image from the Docker Hub
-FROM golang:1.22.5
+FROM golang:1.22.5-alpine3.20
 
 # Install Git
-RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+RUN apk update && apk add --no-cache git
 
 # Set the Current Working Directory inside the container
 WORKDIR /app

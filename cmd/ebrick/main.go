@@ -89,6 +89,7 @@ func runCommand() *cobra.Command {
 
 func buildApp() *cobra.Command {
 	var ldflags string
+	var output string
 
 	cmd := &cobra.Command{
 		Use:   "build",
@@ -102,7 +103,7 @@ func buildApp() *cobra.Command {
 			}
 
 			// Prepare arguments for go build, including ldflags if provided
-			buildArgs := []string{"build", "-o", "app"}
+			buildArgs := []string{"build", "-o", output}
 			if ldflags != "" {
 				buildArgs = append(buildArgs, "-ldflags", ldflags)
 			}
@@ -119,6 +120,7 @@ func buildApp() *cobra.Command {
 
 	// Add ldflags as a command-line flag
 	cmd.Flags().StringVar(&ldflags, "ldflags", "", "Flags to pass to go build, such as -ldflags \"-X main.version=1234\"")
+	cmd.Flags().StringVar(&output, "o", "app", "Output file name")
 
 	return cmd
 }
