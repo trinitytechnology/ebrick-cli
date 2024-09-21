@@ -74,7 +74,7 @@ func ProcessSlicesInput(input string) []string {
 
 func ExecCommand(name string, args ...string) error {
 
-	fmt.Println("Running command:", name, strings.Join(args, " "))
+	fmt.Println("Running:", name, strings.Join(args, " "))
 	cmd := exec.Command(name, args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
