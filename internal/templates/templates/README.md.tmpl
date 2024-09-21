@@ -1,9 +1,13 @@
 # {{ .Name }}
 
-Set Go to access private repo(optional)
+## Boot infrastructure
 
-    export GOPRIVATE=github.com/trinitytechnology/ebrick
+    docker compose up -d
 
-### Run application
+## Run application
 
     ebrick run
+
+## Run application with using docker compose file
+
+    docker compose -f app.yml up -d --build

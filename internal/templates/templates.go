@@ -14,6 +14,9 @@ var (
 	//go:embed templates/docker-compose.yml.tmpl
 	DockerComposeTemplate string
 
+	//go:embed templates/app.yml.tmpl
+	DockerAppTemplate string
+
 	//go:embed templates/go.mod.tmpl
 	GoModTemplate string
 
@@ -43,4 +46,5 @@ const (
 	FILE_GRAFANA_DATASOURCE = "observability/grafana/datasource.yml"
 	FILE_DOCKERFILE         = "Dockerfile"
 	FILE_MODULE             = "module.go"
+	FILE_DOCKER_APP         = "app.yml"
 )

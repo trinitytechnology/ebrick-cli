@@ -38,16 +38,18 @@ messaging:
     password:
 {{- end }}
 
-modules:
-{{- range .Modules }}
-    - id: {{ . }}
-      enable: true
-{{- end }}
-
 {{- if .Observability }}
 observability:
     tracing:
         enable: {{ .Observability }}
         type: tempo
         endpoint: host.docker.internal:4317
+{{- end }}
+
+{{- if .ExternalModules }}
+modules:
+{{- range .ExternalModules }}
+    - id: {{ . }}
+      enable: true
+{{- end }}
 {{- end }}
