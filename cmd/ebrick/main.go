@@ -119,8 +119,7 @@ func buildApp() *cobra.Command {
 	}
 
 	// Add ldflags as a command-line flag
-	cmd.Flags().StringVar(&ldflags, "ldflags", "", "Flags to pass to go build, such as -ldflags \"-X main.version=1234\"")
-	cmd.Flags().StringVar(&output, "o", "app", "Output file name")
-
+	cmd.Flags().StringVarP(&ldflags, "ldflags", "l", "", "Flags to pass to go build, such as -ldflags \"-X main.version=1234\"")
+	cmd.Flags().StringVarP(&output, "output", "o", "app", "Output file name")
 	return cmd
 }
