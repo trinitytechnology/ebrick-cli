@@ -1,5 +1,3 @@
-name-template: 'v$RESOLVED_VERSION 🌈'
-tag-template: 'v$RESOLVED_VERSION'
 categories:
   - title: '🚀 New Features'
     labels:
@@ -23,6 +21,10 @@ categories:
     labels:
       - 'breaking-change'
       - 'major'
+exclude-labels:
+  - 'skip-changelog'
+exclude-contributors:
+  - 'app/dependabot'
 template: |
   ## What's Changed
 
