@@ -3,10 +3,12 @@ package main
 import (
 	_ "embed"
 	"fmt"
+	"log"
 
 	"github.com/spf13/cobra"
 	"github.com/trinitytechnology/ebrick-cli/internal/app"
 	"github.com/trinitytechnology/ebrick-cli/internal/module"
+	"github.com/trinitytechnology/ebrick-cli/pkg/utils"
 )
 
 var version = "development"
@@ -26,6 +28,7 @@ func main() {
 	rootCmd.AddCommand(versionCommand())
 	rootCmd.AddCommand(newCommand())
 	rootCmd.AddCommand(runCommand())
+	rootCmd.AddCommand(buildApp())
 	rootCmd.Execute()
 }
 
@@ -82,4 +85,40 @@ func runCommand() *cobra.Command {
 			app.RunApp()
 		},
 	}
+}
+
+func buildApp() *cobra.Command {
+	var ldflags string
+
+	cmd := &cobra.Command{
+		Use:   "build",
+		Short: "build the ebrick application, can pass flags go build, such as -ldflags \"-X main.version=1234\"",
+		Run: func(cmd *cobra.Command, args []string) {
+			log.Println("Building the application...")
+
+			// Run go mod tidy
+			if err := utils.ExecCommand("go", "mod", "tidy"); err != nil {
+				log.Fatalf("Error running go mod tidy: %v", err)
+			}
+
+			// Prepare arguments for go build, including ldflags if provided
+			buildArgs := []string{"build", "-o", "app"}
+			if ldflags != "" {
+				buildArgs = append(buildArgs, "-ldflags", ldflags)
+			}
+			buildArgs = append(buildArgs, "cmd/main.go")
+
+			// Run go build
+			if err := utils.ExecCommand("go", buildArgs...); err != nil {
+				log.Fatalf("Error building the application: %v", err)
+			}
+
+			log.Println("Application built successfully!")
+		},
+	}
+
+	// Add ldflags as a command-line flag
+	cmd.Flags().StringVar(&ldflags, "ldflags", "", "Flags to pass to go build, such as -ldflags \"-X main.version=1234\"")
+
+	return cmd
 }
