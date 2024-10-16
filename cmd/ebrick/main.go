@@ -12,7 +12,7 @@ import (
 )
 
 var version = "development"
-var frameworkVersion = "v0.3.5"
+var frameworkVersion = "v0.4.0"
 
 //go:embed banner.txt
 var banner string
